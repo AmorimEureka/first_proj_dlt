@@ -1,0 +1,54 @@
+services:
+  webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: ./.env
+    ports:
+      - "8087:8080"
+    volumes:
+      - ./dags:/usr/local/airflow/dags
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      # start_period: 30s
+
+  source_mv_oracle:
+    build:
+      context: .
+      dockerfile: Dockerfile_Oracle
+    restart: unless-stopped
+    container_name: source_mv_oracle
+    env_file: ./.env
+    ports:
+      - "1521:1521"
+    volumes:
+      - ./test_oracle.py:/test_oracle.py
+    depends_on:
+      - webserver
+    networks:
+      - airflow
+
+
+  destination_dw_postgres:
+    image: postgres:17rc1-alpine3.19
+    restart: unless-stopped
+    container_name: destination_dw_postgres
+    env_file: ./.env
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
+    depends_on:
+      - webserver
+    networks:
+      - airflow
+
+volumes:
+  postgres-volume:
+
+networks:
+  airflow:
+    driver: bridge

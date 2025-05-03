@@ -1,1 +1,3 @@
 .venv
+airflow_settings.yaml
+.env

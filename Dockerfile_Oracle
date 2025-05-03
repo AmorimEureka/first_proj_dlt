@@ -1,0 +1,42 @@
+FROM python:3.11-slim
+
+USER root
+
+# Cria o usuário astro antes
+# RUN useradd -ms /bin/bash astro
+
+# Copia o script de instalação
+COPY setup_instant_client.sh .
+
+# Concedendo permissão de execução para usuario atual
+# Executando scrip bash
+RUN chmod +x setup_instant_client.sh && ./setup_instant_client.sh
+
+# Define variáveis de ambiente
+ENV LD_LIBRARY_PATH=/.oracle/instantclient_19_23/
+ENV PYTHONUNBUFFERED=1
+
+# Instala dependências do sistema
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libaio1 \
+    libpq-dev \
+    libssl-dev \
+    python3-dev \
+    musl-dev \
+    build-essential \
+    --no-install-recommends && \
+    rm -rf /var/lib/apt/lists/*
+
+# Apenas para testar conexão local
+RUN pip install --no-cache-dir oracledb==1.3.2
+
+# Permissões para o usuário astro
+# RUN chown -R astro:astro /.oracle && \
+    # chmod -R 775 /.oracle
+
+# Define usuário padrão para execução
+# USER astro
+
+# Mantém o container rodando
+CMD ["tail", "-f", "/dev/null"]
