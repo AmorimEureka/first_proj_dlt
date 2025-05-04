@@ -25,7 +25,9 @@ services:
     ports:
       - "1521:1521"
     volumes:
-      - ./test_oracle.py:/test_oracle.py
+      - ./.dlt/:/app/.dlt
+      - ./include/sql_database_pipeline.py:/app/sql_database_pipeline.py
+      - ./test_oracle.py:/app/test_oracle.py
     depends_on:
       - webserver
     networks:
