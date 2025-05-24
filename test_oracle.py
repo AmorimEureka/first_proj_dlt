@@ -1,22 +1,22 @@
-import oracledb
-import os
+import dlt
 
-# Usa modo thick para conectar com o Instant Client
-oracledb.init_oracle_client(lib_dir="/.oracle/instantclient_19_23")
+from conn_ora_mv import load_data_ora
 
-try:
-    connection = oracledb.connect(
-        user=os.getenv("ORACLE_USER"),
-        password=os.getenv("ORACLE_PASSWORD"),
-        dsn=f"{os.getenv('ORACLE_HOST')}:{os.getenv('ORACLE_PORT')}/{os.getenv('ORACLE_SERVICE')}"
-    )
-    print("✅ Conectado com sucesso ao Oracle!")
+if __name__ == "__main__":
 
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT SYSDATE FROM DUAL")
-        result = cursor.fetchone()
-        print(f"🕒 Data e hora atual no Oracle: {result[0]}")
+    try:
 
-    connection.close()
-except Exception as e:
-    print(f"❌ Erro ao conectar ou executar query: {e}")
+        table_names = dlt.config.get("sources.sql_database.table_names")
+
+        pipeline = dlt.pipeline(
+            pipeline_name="test_oracle",
+            destination="postgres",
+            dataset_name="raw_mv"
+        )
+
+        for tabela in table_names:
+            load_mv = pipeline.run(load_data_ora(tabela), table_name=tabela)
+            print(f"{load_mv}")
+
+    except Exception as e:
+        print(f"Error na pipeline:\n {e}")
