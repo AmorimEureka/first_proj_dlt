@@ -26,7 +26,7 @@ services:
       - "1521:1521"
     volumes:
       - ./.dlt/:/app/.dlt
-      - ./include/sql_database_pipeline.py:/app/sql_database_pipeline.py
+      - ./plugins/conn_ora_mv.py:/app/conn_ora_mv.py
       - ./test_oracle.py:/app/test_oracle.py
     depends_on:
       - webserver
