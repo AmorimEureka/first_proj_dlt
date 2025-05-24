@@ -1,5 +1,4 @@
 .venv
 airflow_settings.yaml
 .env
-.dlt/config.toml
 .dlt/secrets.toml
