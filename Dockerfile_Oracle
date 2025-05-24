@@ -1,6 +1,8 @@
 FROM python:3.11-slim
 
 
+ENV ORACLE_CLIENT_DIR=/.oracle/instantclient_19_23
+
 # Copia o script de instalação
 COPY setup_instant_client.sh .
 
@@ -9,7 +11,7 @@ COPY setup_instant_client.sh .
 RUN chmod +x setup_instant_client.sh && ./setup_instant_client.sh
 
 # Define variáveis de ambiente
-ENV LD_LIBRARY_PATH=/.oracle/instantclient_19_23/
+ENV LD_LIBRARY_PATH=${ORACLE_CLIENT_DIR}:${LD_LIBRARY_PATH}
 ENV PYTHONUNBUFFERED=1
 
 
