@@ -1,22 +1,26 @@
 import dlt
+from conn_ora_mv import ora_source
 
-from conn_ora_mv import load_data_ora
+
+@dlt.source
+def multiple_sources():
+    try:
+        table_names = dlt.config.get("sources.sql_database.table_names")
+
+        for tabela in table_names:
+            yield from ora_source(tabela)
+
+    except Exception as e:
+        print(f"Erro na pipeline:\n {e}")
+        raise
+
 
 if __name__ == "__main__":
 
-    try:
+    pipeline = dlt.pipeline(
+        pipeline_name="test_oracle",
+        destination="postgres",
+        dataset_name="raw_mv"
+    )
 
-        table_names = dlt.config.get("sources.sql_database.table_names")
-
-        pipeline = dlt.pipeline(
-            pipeline_name="test_oracle",
-            destination="postgres",
-            dataset_name="raw_mv"
-        )
-
-        for tabela in table_names:
-            load_mv = pipeline.run(load_data_ora(tabela), table_name=tabela)
-            print(f"{load_mv}")
-
-    except Exception as e:
-        print(f"Error na pipeline:\n {e}")
+    load_info = pipeline.run(multiple_sources())

@@ -15,6 +15,9 @@ included_columns = [
     "CD_ATENDIMENTO",
     "CD_PACIENTE",
     "CD_CONVENIO",
-    "DT_ATENDIMENTO",
+    "HR_ATENDIMENTO",
     "TP_ATENDIMENTO"
 ]
+incremental_column = "HR_ATENDIMENTO"
+initial_value = "2025-01-01"
+primary_key = "CD_ATENDIMENTO"
