@@ -16,7 +16,6 @@ def ora_source(table_name: str):
     config_chave_primaria = dlt.config.get(f"sources.sql_database.{table_name}.primary_key")
     config_data_inicial = dlt.config.get(f"sources.sql_database.{table_name}.initial_value")
 
-    # Formatação data inicial.
     valor_inicial = datetime.strptime(config_data_inicial, "%Y-%m-%d").replace(tzinfo=timezone.utc)
     campos_consulta = ", ".join(confi_campos_tabelas)
 
@@ -53,7 +52,7 @@ def ora_source(table_name: str):
                 col_names = [col[0] for col in cursor.description]
 
                 for row in cursor:
-
+                    print(f"[DEBUG] Linha extraída: {row}")
                     yield dict(zip(col_names, row))
 
         except Exception as e:
